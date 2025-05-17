@@ -4,21 +4,19 @@ import random
 import time
 
 # Configurações
-GRID_SIZE = 13
+GRID_SIZE = 9
 CELL_SIZE = 60
 WIDTH = HEIGHT = GRID_SIZE * CELL_SIZE
-START = (6, 0)
-GOAL = (12,12)
+START = (0, 0)
+GOAL = (8,3)
 OBSTACLES = [
-    (11,11), (1,1), (2,1), (4,1), (4,2),
-    (3,2), (3,4), (3,5), (4,5), (5,5),
-    (5,4), (6,6), (7,6), (1,3), (2,4),
-    (0,5), (2,6), (0,7), (7,3), (7,5),
-    (8,3), (8,5), (9,4), (11,3), (10,7),
-    (11,6), (9,5), (1,7), (1,9), (1,10),
-    (0,11), (3,9), (4,10), (3,11), (3,12),
-    (3,10), (5,10), (6,10), (7,9), (8,10),
-    (12,11), (12,9), (10,9)]
+    (1,0), (1,1), (0,3), (1,3), (0,4),
+    (1,4), (3,1), (3,2), (3,3), (3,4),
+    (3,5), (1,6), (2,6), (3,6), (4,6),
+    (5,6), (6,6), (5,0), (5,1), (5,2),
+    (5,3), (5,4), (1,7), (2,7), (3,7),
+    (4,7), (5,7), (6,7), (7,7), (7,6),
+    (7,5), (7,4), (7,3), (7,2), (7,1)]
 
 ACTIONS = [(0, -1), (0, 1), (-1, 0), (1, 0)]  # cima, baixo, esquerda, direita
 
@@ -26,7 +24,7 @@ ACTIONS = [(0, -1), (0, 1), (-1, 0), (1, 0)]  # cima, baixo, esquerda, direita
 ALPHA = 0.1
 GAMMA = 0.9
 EPSILON = 0.2
-EPISODES = 700
+EPISODES = 100
 MAX_STEPS = 100
 
 # Cores
@@ -116,9 +114,18 @@ for episode in range(EPISODES):
         draw_grid(screen)
         draw_agent(screen, state, ORANGE)
         pygame.display.flip()
-        clock.tick(2000)
+        clock.tick(20)
 
         if state == GOAL:
+            
+            for i in range(5):
+                draw_agent(screen, state, (255, 215, 0))  # Gold
+                pygame.display.flip()
+                time.sleep(0.1)
+                draw_agent(screen, state, ORANGE)
+                pygame.display.flip()
+                time.sleep(0.1)
+
             break
 
 print("Treinamento concluído!")
@@ -168,5 +175,9 @@ while running:
                 time.sleep(0.8)  # <-- controle de velocidade da execução
         else:
             reached_goal = True
+            pygame.mixer.init()
+            pygame.mixer.music.load("success.wav") 
+            pygame.mixer.music.play()
+
             print("\nCaminho percorrido pelo agente:")
             print(path)
