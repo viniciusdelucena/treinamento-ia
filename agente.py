@@ -24,7 +24,7 @@ ACTIONS = [(0, -1), (0, 1), (-1, 0), (1, 0)]  # cima, baixo, esquerda, direita
 ALPHA = 0.1
 GAMMA = 0.9
 EPSILON = 0.2
-EPISODES = 100
+EPISODES = 350
 MAX_STEPS = 100
 
 # Cores
@@ -75,6 +75,13 @@ def draw_agent(screen, pos, color=BLUE):
     rect = pygame.Rect(pos[0] * CELL_SIZE + 10, pos[1] * CELL_SIZE + 10, CELL_SIZE - 20, CELL_SIZE - 20)
     pygame.draw.ellipse(screen, color, rect)
 
+def draw_episode_counter(screen, episode):
+    text = font.render(f"Episódio: {episode + 1}", True, (0, 0, 0))
+    text_height = text.get_height()
+    x = 10  # margem da borda esquerda
+    y = HEIGHT - text_height - 10  # margem da borda inferior
+    screen.blit(text, (x, y))
+
 def process_events():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -85,6 +92,9 @@ def process_events():
 # TREINAMENTO COM VISUALIZAÇÃO
 # -----------------------------
 pygame.init()
+pygame.font.init()
+font = pygame.font.SysFont("Arial", 24)
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Treinamento do Agente")
 clock = pygame.time.Clock()
@@ -113,11 +123,11 @@ for episode in range(EPISODES):
         screen.fill(WHITE)
         draw_grid(screen)
         draw_agent(screen, state, ORANGE)
+        draw_episode_counter(screen, episode)
         pygame.display.flip()
-        clock.tick(20)
+        clock.tick(2000)
 
         if state == GOAL:
-            
             for i in range(5):
                 draw_agent(screen, state, (255, 215, 0))  # Gold
                 pygame.display.flip()
@@ -125,7 +135,6 @@ for episode in range(EPISODES):
                 draw_agent(screen, state, ORANGE)
                 pygame.display.flip()
                 time.sleep(0.1)
-
             break
 
 print("Treinamento concluído!")
@@ -151,16 +160,14 @@ while running:
     screen.fill(WHITE)
     draw_grid(screen)
 
-    # Desenha caminho já percorrido
     for pos in path:
         draw_agent(screen, pos, BLUE)
 
-    # Desenha agente atual
     if not reached_goal:
         draw_agent(screen, agent_pos, BLUE)
 
     pygame.display.flip()
-    clock.tick(30)  # FPS alto para manter janela fluida
+    clock.tick(30)
 
     if not reached_goal:
         if agent_pos != GOAL:
@@ -172,12 +179,11 @@ while running:
             else:
                 path.append(next_pos)
                 agent_pos = next_pos
-                time.sleep(0.8)  # <-- controle de velocidade da execução
+                time.sleep(0.8)
         else:
             reached_goal = True
             pygame.mixer.init()
             pygame.mixer.music.load("success.wav") 
             pygame.mixer.music.play()
-
             print("\nCaminho percorrido pelo agente:")
             print(path)
